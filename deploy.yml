@@ -7,7 +7,7 @@
     ansible_port: 22
     ansible_become: yes
     image_name: thedudebridge
-    compose_file: /path/to/docker-compose.yml
+    compose_file: docker-compose.yml
     endpoint: 34.101.101.11:80
   tasks:
   - name: Copy built image and compose file
