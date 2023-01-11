@@ -1,0 +1,43 @@
+---
+- name: Deploy thedudebridge
+  hosts: all
+  vars:
+    ansible_user: engineer
+    ansible_password: domoregetmore
+    ansible_port: 22
+    ansible_become: yes
+    image_name: thedudebridge
+    compose_file: /path/to/docker-compose.yml
+    endpoint: 34.101.101.11:80
+  tasks:
+  - name: Copy built image and compose file
+    copy:
+      src: "{{ image_name }}_image.tar"
+      dest: "/tmp"
+    register: image_copied
+
+  - name: Load image
+    command: "docker load -i /tmp/{{ image_name }}_image.tar"
+    when: image_copied.changed
+
+  - name: Copy compose file
+    copy:
+      src: "{{ compose_file }}"
+      dest: "/tmp"
+    register: compose_file_copied
+
+  - name: Start container
+    command: "docker-compose -f /tmp/{{ compose_file }} up -d"
+    when: compose_file_copied.changed
+
+  - name: Wait for endpoint to return specific headers
+    wait_for:
+      host: "{{ endpoint }}"
+      search_regex: "HTTP/1.1 200 OK\nX-Bms-Response: OK"
+      timeout: 60
+
+  - name: Wait for endpoint to return specific body
+    wait_for:
+      host: "{{ endpoint }}"
+      search_regex: "You're set!"
+      timeout: 60
