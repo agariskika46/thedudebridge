@@ -27,7 +27,7 @@
     register: compose_file_copied
 
   - name: Start container
-    command: "docker-compose -f /tmp/{{ compose_file }} up -d"
+    command: "docker-compose up -d"
     when: compose_file_copied.changed
 
   - name: Wait for endpoint to return specific headers
