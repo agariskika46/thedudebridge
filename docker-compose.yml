@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+  thedudebridge:
+    build: .
+    ports:
+      - "80:80"
+    environment:
+      - PORT=80
